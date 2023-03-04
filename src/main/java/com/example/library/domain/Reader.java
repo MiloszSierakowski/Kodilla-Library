@@ -10,7 +10,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Reader {
-    private int id;
+    private Long id;
     private String firstname;
     private String lastname;
     private Date registrationDate;

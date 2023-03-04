@@ -6,8 +6,8 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class CopyOfBookDto {
-    private int id;
-    private int bookId;
+    private Long id;
+    private Long bookId;
     private String status;
     private boolean isRental;
 }

@@ -8,7 +8,7 @@ import java.util.Date;
 @Getter
 @AllArgsConstructor
 public class ReaderDto {
-    private int id;
+    private Long id;
     private String firstname;
     private String lastname;
     private Date registrationDate;

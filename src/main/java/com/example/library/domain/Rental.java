@@ -10,9 +10,9 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Rental {
-    private int id;
-    private int copyOfBookId;
-    private int readerId;
+    private Long id;
+    private Long copyOfBookId;
+    private Long readerId;
     private Date rentDate;
     private Date returnDate;
 }

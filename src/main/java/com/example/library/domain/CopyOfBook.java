@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CopyOfBook {
-    private int id;
+    private Long id;
     private int bookId;
     private String status;
     private boolean isRental;
