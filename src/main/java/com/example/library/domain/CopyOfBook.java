@@ -3,7 +3,7 @@ package com.example.library.domain;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
+//todo entity i zależności
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
