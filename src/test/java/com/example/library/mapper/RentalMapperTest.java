@@ -4,13 +4,13 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ReaderMapperTest {
+class RentalMapperTest {
 
     @Test
-    void mapToReader() {
+    void mapToRental() {
     }
 
     @Test
-    void mapToReaderDto() {
+    void mapToRentalDto() {
     }
 }

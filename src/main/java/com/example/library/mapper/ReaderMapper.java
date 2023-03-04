@@ -11,7 +11,7 @@ public class ReaderMapper {
                 readerDto.getLastname(), readerDto.getRegistrationDate());
     }
 
-    public ReaderDto mapToBookDto(Reader reader) {
+    public ReaderDto mapToReaderDto(Reader reader) {
         return new ReaderDto(reader.getId(), reader.getFirstname(),
                 reader.getLastname(), reader.getRegistrationDate());
     }
