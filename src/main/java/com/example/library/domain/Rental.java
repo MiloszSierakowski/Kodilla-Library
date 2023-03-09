@@ -1,18 +1,28 @@
 package com.example.library.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.util.Date;
-//todo entity i zależności
-@Data
+
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity(name = "RENTAL")
 public class Rental {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "ID")
     private Long id;
-    private Long copyOfBookId;
-    private Long readerId;
+    @ManyToOne
+    @JoinColumn(name = "COPY_OF_BOOK_ID")
+    private CopyOfBook copyOfBookId;
+    @ManyToOne
+    @JoinColumn(name = "USER_ID")
+    private Reader readerId;
+    @Column(name = "RENT_DATE")
     private Date rentDate;
+    @Column(name = "RETURN_DATE")
     private Date returnDate;
 }
