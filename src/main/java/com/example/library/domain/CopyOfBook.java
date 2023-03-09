@@ -9,6 +9,11 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 
+@NamedQuery(
+        name = "COPY_OF_BOOK.findAvailableCopyOfBook",
+        query = "FROM COPY_OF_BOOK C JOIN COPY_OF_BOOK.book B " +
+                "where C.isRental = false AND B.title = :title"
+)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -21,7 +26,7 @@ public class CopyOfBook {
     private Long id;
     @ManyToOne
     @JoinColumn(name = "BOOK_ID")
-    private Book bookId;
+    private Book book;
     @Column(name = "STATUS")
     private String status;
     @Column(name = "IS_RENTAL")
