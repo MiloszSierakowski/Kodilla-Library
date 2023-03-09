@@ -9,8 +9,8 @@ import java.util.Date;
 @AllArgsConstructor
 public class RentalDto {
     private Long id;
-    private Long copyOfBookId;
-    private Long readerId;
+    private CopyOfBook copyOfBook;
+    private Reader reader;
     private Date rentDate;
     private Date returnDate;
 }

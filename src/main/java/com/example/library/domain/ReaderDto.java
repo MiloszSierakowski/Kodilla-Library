@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @AllArgsConstructor
@@ -12,4 +13,5 @@ public class ReaderDto {
     private String firstname;
     private String lastname;
     private Date registrationDate;
+    private List<Rental> rentalList;
 }

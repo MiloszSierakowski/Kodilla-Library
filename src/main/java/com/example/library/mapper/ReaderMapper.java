@@ -8,11 +8,13 @@ import org.springframework.stereotype.Service;
 public class ReaderMapper {
     public Reader mapToReader(ReaderDto readerDto) {
         return new Reader(readerDto.getId(), readerDto.getFirstname(),
-                readerDto.getLastname(), readerDto.getRegistrationDate());
+                readerDto.getLastname(), readerDto.getRegistrationDate(),
+                readerDto.getRentalList());
     }
 
     public ReaderDto mapToReaderDto(Reader reader) {
         return new ReaderDto(reader.getId(), reader.getFirstname(),
-                reader.getLastname(), reader.getRegistrationDate());
+                reader.getLastname(), reader.getRegistrationDate(),
+                reader.getRentalList());
     }
 }

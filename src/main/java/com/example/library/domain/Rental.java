@@ -17,10 +17,10 @@ public class Rental {
     private Long id;
     @ManyToOne
     @JoinColumn(name = "COPY_OF_BOOK_ID")
-    private CopyOfBook copyOfBookId;
+    private CopyOfBook copyOfBook;
     @ManyToOne
     @JoinColumn(name = "USER_ID")
-    private Reader readerId;
+    private Reader reader;
     @Column(name = "RENT_DATE")
     private Date rentDate;
     @Column(name = "RETURN_DATE")
