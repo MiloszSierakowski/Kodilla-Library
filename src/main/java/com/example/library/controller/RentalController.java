@@ -23,7 +23,7 @@ public class RentalController {
     private final CopyOfBookService copyOfBookService;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> createNewRental(@RequestBody RentalDto rentalDto) {
+    public ResponseEntity<Void> createNewRental(@RequestBody RentalDto rentalDto) throws CopyOfBookNotFoundException {
         Rental rental = rentalMapper.mapToRental(rentalDto);
 
         Optional<CopyOfBook> copyOfBook = copyOfBookService.findById(rental.getCopyOfBook().getId());
@@ -33,13 +33,13 @@ public class RentalController {
             copyOfBook.get().setRental(true);
             copyOfBookService.saveCopyOfBook(copyOfBook.get());
         } else {
-            //todo exeption
+            throw new CopyOfBookNotFoundException();
         }
         return ResponseEntity.ok().build();
     }
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> finishRental(@RequestBody RentalDto rentalDto) {
+    public ResponseEntity<Void> finishRental(@RequestBody RentalDto rentalDto) throws CopyOfBookNotFoundException, RentalNotFoundException {
         Optional<Rental> rental = rentalService.findById(rentalDto.getId());
         Optional<CopyOfBook> copyOfBook = copyOfBookService.findById(rentalDto.getCopyOfBook().getId());
 
@@ -47,7 +47,11 @@ public class RentalController {
             rental.get().setReturnDate(rentalDto.getReturnDate());
             copyOfBook.get().setRental(false);
         } else {
-            //todo exeption
+            if (rental.isEmpty()){
+                throw new RentalNotFoundException();
+            }else {
+                throw new CopyOfBookNotFoundException();
+            }
         }
 
         return ResponseEntity.ok().build();

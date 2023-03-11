@@ -17,7 +17,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @CrossOrigin("*")
 public class CopyOfBookController {
-//todo dodać logera i errory
     private final CopyOfBookService copyOfBookService;
     private final CopyOfBookMapper copyOfBookMapper;
 
@@ -29,13 +28,13 @@ public class CopyOfBookController {
     }
 
     @PutMapping(value = "/{id}/{status}")
-    public ResponseEntity<CopyOfBookDto> changeCopyOfBookStatus(@PathVariable Long id, @PathVariable String status) {
+    public ResponseEntity<CopyOfBookDto> changeCopyOfBookStatus(@PathVariable Long id, @PathVariable String status) throws CopyOfBookNotFoundException {
         Optional<CopyOfBook> copyOfBook = copyOfBookService.findById(id);
         if (copyOfBook.isPresent()){
             copyOfBook.get().setStatus(status);
             copyOfBookService.saveCopyOfBook(copyOfBook.get());
         }else {
-            //todo dodać logera
+            throw new CopyOfBookNotFoundException();
         }
         return ResponseEntity.ok(copyOfBook.map(copyOfBookMapper::mapToCopyOfBookDto).orElse(null));
     }
