@@ -21,7 +21,7 @@ public class CopyOfBookService {
         return copyOfBookRepository.findById(id);
     }
 
-    public List<CopyOfBook> findAvailableCopyOfBook(String title){
+/*    public List<CopyOfBook> findAvailableCopyOfBook(String title){
         return copyOfBookRepository.findAvailableCopyOfBook(title);
-    }
+    }*/
 }

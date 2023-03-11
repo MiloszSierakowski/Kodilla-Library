@@ -25,7 +25,7 @@ public class Reader {
     private Date registrationDate;
     @OneToMany(
             targetEntity = Rental.class,
-            mappedBy = "READER",
+            mappedBy = "reader",
             cascade = CascadeType.ALL,
             fetch = FetchType.LAZY
     )

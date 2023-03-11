@@ -39,9 +39,9 @@ public class CopyOfBookController {
         return ResponseEntity.ok(copyOfBook.map(copyOfBookMapper::mapToCopyOfBookDto).orElse(null));
     }
 
-    @GetMapping(value = "/{title}")
+/*    @GetMapping(value = "/{title}")
     public ResponseEntity<List<CopyOfBookDto>> howManyCopiesAreAvailable(@PathVariable String title){
         List<CopyOfBook> copyOfBookList = copyOfBookService.findAvailableCopyOfBook(title);
         return ResponseEntity.ok(copyOfBookMapper.mapToListCopyOfBookDto(copyOfBookList));
-    }
+    }*/
 }

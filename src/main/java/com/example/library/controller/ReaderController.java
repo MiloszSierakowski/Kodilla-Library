@@ -1,12 +1,8 @@
 package com.example.library.controller;
 
-import com.example.library.domain.Book;
-import com.example.library.domain.BookDto;
 import com.example.library.domain.Reader;
 import com.example.library.domain.ReaderDto;
-import com.example.library.mapper.BookMapper;
 import com.example.library.mapper.ReaderMapper;
-import com.example.library.service.BookService;
 import com.example.library.service.ReaderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;

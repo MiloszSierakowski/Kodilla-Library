@@ -1,10 +1,13 @@
 package com.example.library.domain;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -22,11 +25,11 @@ public class Book {
     @Column(name = "AUTHOR")
     private String author;
     @Column(name = "PUBLICATION_DATE")
-    private Date publicationDate;
+    private LocalDate publicationDate;
 
     @OneToMany(
             targetEntity = CopyOfBook.class,
-            mappedBy = "BOOK",
+            mappedBy = "book",
             cascade = CascadeType.ALL,
             fetch = FetchType.LAZY
     )

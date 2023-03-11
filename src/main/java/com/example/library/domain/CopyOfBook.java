@@ -9,11 +9,11 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 
-@NamedQuery(
+/*@NamedQuery(
         name = "COPY_OF_BOOK.findAvailableCopyOfBook",
-        query = "FROM COPY_OF_BOOK C JOIN COPY_OF_BOOK.book B " +
+        query = "FROM COPY_OF_BOOK C JOIN BOOK B ON C.book.id = B.id " +
                 "where C.isRental = false AND B.title = :title"
-)
+)*/
 @Getter
 @Setter
 @NoArgsConstructor
@@ -33,7 +33,7 @@ public class CopyOfBook {
     private boolean isRental;
     @OneToMany(
             targetEntity = Rental.class,
-            mappedBy = "COPY_OF_BOOK",
+            mappedBy = "copyOfBook",
             cascade = CascadeType.ALL,
             fetch = FetchType.LAZY
     )

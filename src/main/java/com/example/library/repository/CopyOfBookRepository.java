@@ -10,6 +10,6 @@ import java.util.List;
 
 @Repository
 public interface CopyOfBookRepository extends CrudRepository<CopyOfBook, Long> {
-    @Query
-    List<CopyOfBook> findAvailableCopyOfBook(@Param("title") String title);
+/*    @Query
+    List<CopyOfBook> findAvailableCopyOfBook(@Param("title") String title);*/
 }
