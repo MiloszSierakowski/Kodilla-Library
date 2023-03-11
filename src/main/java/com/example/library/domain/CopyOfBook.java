@@ -8,12 +8,17 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
-
-/*@NamedQuery(
+/*@NamedNativeQuery(
+        name = "COPY_OF_BOOK.findAvailableCopyOfBook",
+        query = "SELECT * FROM kodilla_library.copy_of_book C JOIN kodilla_library.book B ON C.book_id = B.id " +
+                "where C.is_rental = false AND B.title = :title"
+)*/
+@NamedQuery(
         name = "COPY_OF_BOOK.findAvailableCopyOfBook",
         query = "FROM COPY_OF_BOOK C JOIN BOOK B ON C.book.id = B.id " +
                 "where C.isRental = false AND B.title = :title"
-)*/
+)
+
 @Getter
 @Setter
 @NoArgsConstructor
