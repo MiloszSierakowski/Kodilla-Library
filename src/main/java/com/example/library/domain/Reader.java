@@ -1,10 +1,13 @@
 package com.example.library.domain;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -22,7 +25,7 @@ public class Reader {
     @Column(name = "LASTNAME")
     private String lastname;
     @Column(name = "REGISTRATION_DATE")
-    private Date registrationDate;
+    private LocalDate registrationDate;
     @OneToMany(
             targetEntity = Rental.class,
             mappedBy = "reader",

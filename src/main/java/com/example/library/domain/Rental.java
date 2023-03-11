@@ -1,9 +1,12 @@
 package com.example.library.domain;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -22,7 +25,7 @@ public class Rental {
     @JoinColumn(name = "USER_ID")
     private Reader reader;
     @Column(name = "RENT_DATE")
-    private Date rentDate;
+    private LocalDate rentDate;
     @Column(name = "RETURN_DATE")
-    private Date returnDate;
+    private LocalDate returnDate;
 }

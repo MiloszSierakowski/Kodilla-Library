@@ -35,5 +35,16 @@ class BookMapperTest {
 
     @Test
     void mapToBookDto() {
+        List<CopyOfBook> copyOfBookList = new ArrayList<>();
+        Book book = new Book(1L, "Test", "Milosz", LocalDate.now(), copyOfBookList);
+        BookDto bookDto = bookMapper.mapToBookDto(book);
+
+        assertAll(
+                ()-> assertEquals(book.getId(),bookDto.getId()),
+                ()-> assertEquals(book.getTitle(),bookDto.getTitle()),
+                ()-> assertEquals(book.getAuthor(),bookDto.getAuthor()),
+                ()-> assertEquals(book.getPublicationDate(),bookDto.getPublicationDate()),
+                ()-> assertTrue(bookDto.getCopyOfBookList().isEmpty())
+        );
     }
 }

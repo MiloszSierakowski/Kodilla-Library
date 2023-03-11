@@ -3,7 +3,7 @@ package com.example.library.domain;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @Getter
@@ -12,6 +12,6 @@ public class ReaderDto {
     private Long id;
     private String firstname;
     private String lastname;
-    private Date registrationDate;
+    private LocalDate registrationDate;
     private List<Rental> rentalList;
 }
