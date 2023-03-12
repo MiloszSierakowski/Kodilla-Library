@@ -1,17 +1,13 @@
 package com.example.library.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "READER")
@@ -20,17 +16,18 @@ public class Reader {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "ID")
     private Long id;
-    @Column(name = "FIRSTNAME")
+    @Column(name = "FIRSTNAME", nullable = false)
     private String firstname;
-    @Column(name = "LASTNAME")
+    @Column(name = "LASTNAME", nullable = false)
     private String lastname;
-    @Column(name = "REGISTRATION_DATE")
+    @Column(name = "REGISTRATION_DATE", nullable = false)
     private LocalDate registrationDate;
     @OneToMany(
             targetEntity = Rental.class,
             mappedBy = "reader",
             cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY
+            fetch = FetchType.EAGER,
+            orphanRemoval = true
     )
     private List<Rental> rentalList = new ArrayList<>();
 }
