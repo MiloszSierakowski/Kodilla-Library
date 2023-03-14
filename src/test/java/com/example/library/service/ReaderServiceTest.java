@@ -8,16 +8,16 @@ import com.example.library.repository.BookRepository;
 import com.example.library.repository.CopyOfBookRepository;
 import com.example.library.repository.ReaderRepository;
 import com.example.library.repository.RentalRepository;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 class ReaderServiceTest {
@@ -32,59 +32,44 @@ class ReaderServiceTest {
     private BookRepository bookRepository;
     @Autowired
     private CopyOfBookRepository copyOfBookRepository;
-    private Reader savedReader;
-
-    @AfterEach
-    void cleanUp() {
-        rentalRepository.deleteById(savedReader.getId());
-    }
 
     @Test
     void saveReaderWithoutRental() {
         Reader reader = new Reader(1L, "Milosz", "S", LocalDate.now(), new ArrayList<>());
 
-        savedReader = readerService.saveReader(reader);
+        Reader savedReader = readerService.saveReader(reader);
         Optional<Reader> searchedReader = readerRepository.findById(savedReader.getId());
 
-        assertTrue(searchedReader.isPresent());
-        assertEquals(savedReader.getFirstname(), searchedReader.get().getFirstname());
-        assertEquals(savedReader.getLastname(), searchedReader.get().getLastname());
-        assertEquals(savedReader.getRegistrationDate(), searchedReader.get().getRegistrationDate());
-        assertEquals(0, searchedReader.get().getRentalList().size());
+        try {
+            assertTrue(searchedReader.isPresent());
+            assertEquals(savedReader.getFirstname(), searchedReader.get().getFirstname());
+            assertEquals(savedReader.getLastname(), searchedReader.get().getLastname());
+            assertEquals(savedReader.getRegistrationDate(), searchedReader.get().getRegistrationDate());
+            assertEquals(0, searchedReader.get().getRentalList().size());
+        } finally {
+            readerRepository.deleteById(savedReader.getId());
+        }
     }
 
     @Test
     void saveReaderWithRental() {
-
-        savedReader = readerService.saveReader(new Reader(1L, "Milosz", "S", LocalDate.now(), new ArrayList<>()));
+        Reader savedReader = readerService.saveReader(new Reader(1L, "Milosz", "S", LocalDate.now(), new ArrayList<>()));
         Book savedBook = bookRepository.save(new Book(1L, "Testowa ksiazka", "Milosz", LocalDate.now(), new ArrayList<>()));
         CopyOfBook savedCopyOfBook = copyOfBookRepository.save(new CopyOfBook(1L, savedBook, "New one", true, new ArrayList<>()));
-
-//        book.getCopyOfBookList().add(copyOfBook);
-
-//        reader.getRentalList().add(rental);
-//        reader.getRentalList().add(rental1);
-
-//        copyOfBook.getRentalList().add(rental);
-//        copyOfBook.getRentalList().add(rental1);
-
-        Rental rental = new Rental(1L, savedCopyOfBook, savedReader, LocalDate.now(), LocalDate.now());
-        Rental rental1 = new Rental(1L, savedCopyOfBook, savedReader, LocalDate.now(), LocalDate.now());
-
-        rentalRepository.save(rental);
-        rentalRepository.save(rental1);
+        Rental savedRental = rentalRepository.save(new Rental(1L, savedCopyOfBook, savedReader, LocalDate.now(), LocalDate.now()));
 
         Optional<Reader> searchedReader = readerRepository.findById(savedReader.getId());
 
-        assertTrue(searchedReader.isPresent());
-        assertEquals(savedReader.getFirstname(), searchedReader.get().getFirstname());
-        assertEquals(savedReader.getLastname(), searchedReader.get().getLastname());
-        assertEquals(savedReader.getRegistrationDate(), searchedReader.get().getRegistrationDate());
-        assertEquals(2, searchedReader.get().getRentalList().size());
-
-        assertEquals(rental.getRentDate(), searchedReader.get().getRentalList().get(0).getRentDate());
-        assertEquals(rental1.getRentDate(), searchedReader.get().getRentalList().get(1).getRentDate());
-
-        bookRepository.deleteById(savedBook.getId());
+        try {
+            assertTrue(searchedReader.isPresent());
+            assertEquals(savedReader.getFirstname(), searchedReader.get().getFirstname());
+            assertEquals(savedReader.getLastname(), searchedReader.get().getLastname());
+            assertEquals(savedReader.getRegistrationDate(), searchedReader.get().getRegistrationDate());
+            assertEquals(1, searchedReader.get().getRentalList().size());
+            assertEquals(savedRental.getRentDate(), searchedReader.get().getRentalList().get(0).getRentDate());
+        } finally {
+            readerRepository.deleteById(savedReader.getId());
+            bookRepository.deleteById(savedBook.getId());
+        }
     }
 }

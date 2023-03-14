@@ -10,7 +10,8 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "BOOK")
+@Entity
+@Table(name = "BOOK")
 public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -27,7 +28,8 @@ public class Book {
             targetEntity = CopyOfBook.class,
             mappedBy = "book",
             cascade = CascadeType.ALL,
-            fetch = FetchType.EAGER
+            fetch = FetchType.EAGER,
+            orphanRemoval = true
     )
     private List<CopyOfBook> copyOfBookList = new ArrayList<>();
 }

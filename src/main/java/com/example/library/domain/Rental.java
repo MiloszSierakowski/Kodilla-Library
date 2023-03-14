@@ -8,16 +8,17 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "RENTAL")
+@Entity
+@Table(name = "RENTAL")
 public class Rental {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "ID")
     private Long id;
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "COPY_OF_BOOK_ID", nullable = false)
     private CopyOfBook copyOfBook;
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID", nullable = false)
     private Reader reader;
     @Column(name = "RENT_DATE", nullable = false)

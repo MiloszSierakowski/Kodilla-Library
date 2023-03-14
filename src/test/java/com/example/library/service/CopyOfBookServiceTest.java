@@ -53,58 +53,48 @@ class CopyOfBookServiceTest {
         book.getCopyOfBookList().get(1).getRentalList().add(
                 new Rental(2L, book.getCopyOfBookList().get(1), savedReader, LocalDate.now(), LocalDate.now())
         );
-
         savedBook = bookRepository.save(book);
     }
 
     @AfterEach
     void clenUp() {
-        rentalRepository.deleteById(savedBook.getCopyOfBookList().get(1).getRentalList().get(0).getId());
-        rentalRepository.deleteById(savedBook.getCopyOfBookList().get(1).getRentalList().get(1).getId());
-        copyOfBookRepository.deleteById(savedBook.getCopyOfBookList().get(0).getId());
-        copyOfBookRepository.deleteById(savedBook.getCopyOfBookList().get(1).getId());
-        copyOfBookRepository.deleteById(savedBook.getCopyOfBookList().get(2).getId());
-//        readerRepository.deleteById(savedReader.getId());
-//        bookRepository.deleteById(savedBook.getId());
+        readerRepository.deleteById(savedReader.getId());
+        bookRepository.deleteById(savedBook.getId());
     }
 
     @Test
     void saveCopyOfBook() {
         CopyOfBook copyOfBook = new CopyOfBook(1L, savedBook, "new book", false, new ArrayList<>());
+        Rental rental = new Rental(3L, copyOfBook, savedReader, LocalDate.now(), LocalDate.now());
+        Rental rental1 = new Rental(4L, copyOfBook, savedReader, LocalDate.now(), LocalDate.now());
 
-//        copyOfBook.getRentalList().add(rental);
-//        copyOfBook.getRentalList().add(rental1);
+        copyOfBook.getRentalList().add(rental);
+        copyOfBook.getRentalList().add(rental1);
 
         CopyOfBook saveCopyOfBook = copyOfBookService.saveCopyOfBook(copyOfBook);
 
-        Rental rental = new Rental(3L, saveCopyOfBook, savedReader, LocalDate.now(), LocalDate.now());
-        Rental rental1 = new Rental(4L, saveCopyOfBook, savedReader, LocalDate.now(), LocalDate.now());
-        Rental savedRental = rentalRepository.save(rental);
-        Rental savedRental1 = rentalRepository.save(rental1);
-
-        Optional<CopyOfBook> afterUpdate = copyOfBookService.findById(saveCopyOfBook.getId());
+        Optional<CopyOfBook> searchedCopyOfBook = copyOfBookRepository.findById(saveCopyOfBook.getId());
+        Optional<Book> searchedBook = bookRepository.findById(savedBook.getId());
 
         try {
-            assertNotNull(saveCopyOfBook.getId());
-            assertEquals(savedBook.getId(), saveCopyOfBook.getBook().getId());
-            assertEquals(copyOfBook.getStatus(), saveCopyOfBook.getStatus());
-            assertEquals(copyOfBook.isRental(), saveCopyOfBook.isRental());
-            assertEquals(copyOfBook.getRentalList().size(), saveCopyOfBook.getRentalList().size());
+            assertTrue(searchedCopyOfBook.isPresent());
+            assertTrue(searchedBook.isPresent());
 
-            assertTrue(afterUpdate.isPresent());
-            Optional<Rental> searchedRental = rentalRepository.findById(afterUpdate.get().getRentalList().get(0).getId());
-            Optional<Rental> searchedRental1 = rentalRepository.findById(afterUpdate.get().getRentalList().get(1).getId());
+            assertEquals(searchedBook.get().getCopyOfBookList().get(3).getId(), searchedCopyOfBook.get().getId());
+            assertEquals(copyOfBook.getStatus(), searchedCopyOfBook.get().getStatus());
+            assertEquals(copyOfBook.isRental(), searchedCopyOfBook.get().isRental());
+            assertEquals(copyOfBook.getRentalList().size(), searchedCopyOfBook.get().getRentalList().size());
+
+            Optional<Rental> searchedRental = rentalRepository.findById(searchedCopyOfBook.get().getRentalList().get(0).getId());
+            Optional<Rental> searchedRental1 = rentalRepository.findById(searchedCopyOfBook.get().getRentalList().get(1).getId());
 
             assertTrue(searchedRental.isPresent());
             assertTrue(searchedRental1.isPresent());
             assertEquals(rental.getRentDate(), searchedRental.get().getRentDate());
             assertEquals(rental1.getReturnDate(), searchedRental1.get().getReturnDate());
         } finally {
-            rentalRepository.deleteById(savedRental.getId());
-            rentalRepository.deleteById(savedRental1.getId());
-            copyOfBookRepository.deleteById(afterUpdate.get().getId());
+            copyOfBookRepository.deleteById(searchedCopyOfBook.orElse(saveCopyOfBook).getId());
         }
-
     }
 
     @Test
@@ -113,24 +103,26 @@ class CopyOfBookServiceTest {
 
         CopyOfBook saveCopyOfBook = copyOfBookService.saveCopyOfBook(copyOfBook);
         Optional<CopyOfBook> searchedCopyOfBook = copyOfBookService.findById(saveCopyOfBook.getId());
+        Optional<Book> searchedBook = bookRepository.findById(savedBook.getId());
 
-        assertTrue(searchedCopyOfBook.isPresent());
-        assertEquals(copyOfBook.getStatus(), searchedCopyOfBook.get().getStatus());
-        assertEquals(copyOfBook.isRental(), searchedCopyOfBook.get().isRental());
-        assertEquals(0, searchedCopyOfBook.get().getRentalList().size());
+        try {
+            assertTrue(searchedCopyOfBook.isPresent());
+            assertTrue(searchedBook.isPresent());
+            assertEquals(copyOfBook.getStatus(), searchedCopyOfBook.get().getStatus());
+            assertEquals(copyOfBook.isRental(), searchedCopyOfBook.get().isRental());
+            assertEquals(0, searchedCopyOfBook.get().getRentalList().size());
+            assertEquals(searchedBook.get().getCopyOfBookList().get(3).getId(), searchedCopyOfBook.get().getId());
+        } finally {
+            copyOfBookRepository.deleteById(searchedCopyOfBook.orElse(saveCopyOfBook).getId());
+        }
     }
 
     @Test
     void findAvailableCopyOfBook() {
-        CopyOfBook copyOfBook = new CopyOfBook(1L, savedBook, "new book", true, new ArrayList<>());
-
-        copyOfBookService.saveCopyOfBook(copyOfBook);
+        copyOfBookService.saveCopyOfBook(new CopyOfBook(1L, savedBook, "new book", true, new ArrayList<>()));
 
         List<CopyOfBook> availableToRent = copyOfBookService.findAvailableCopyOfBook(savedBook.getTitle());
 
-        availableToRent.forEach(copyOfBook1 -> System.out.println(copyOfBook1.getId()));
-
         assertEquals(2, availableToRent.size());
-
     }
 }

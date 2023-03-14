@@ -9,13 +9,14 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "COPY_OF_BOOK")
+@Entity
+@Table(name = "COPY_OF_BOOK")
 public class CopyOfBook {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "ID")
     private Long id;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "BOOK_ID", nullable = false)
     private Book book;
     @Column(name = "STATUS")

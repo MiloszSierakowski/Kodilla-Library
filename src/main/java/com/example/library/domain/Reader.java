@@ -10,7 +10,8 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "READER")
+@Entity
+@Table(name = "READER")
 public class Reader {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

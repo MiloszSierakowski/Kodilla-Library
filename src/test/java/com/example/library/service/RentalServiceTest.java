@@ -22,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class RentalServiceTest {
-
     @Autowired
     private BookRepository bookRepository;
     @Autowired
@@ -36,6 +35,7 @@ class RentalServiceTest {
     private Book savedBook;
     private Reader savedReader;
     private CopyOfBook savedCopyOfBook;
+    private Rental savedRental;
 
     @BeforeEach
     void setUp() {
@@ -46,40 +46,56 @@ class RentalServiceTest {
 
     @AfterEach
     void cleanUp() {
-        rentalRepository.deleteAll();
-//        copyOfBookRepository.deleteAll();
-//        bookRepository.deleteAll();
-//        readerRepository.deleteAll();
+        copyOfBookRepository.deleteById(savedCopyOfBook.getId());
+        bookRepository.deleteById(savedBook.getId());
+        readerRepository.deleteById(savedReader.getId());
     }
 
     @Test
     void testSaveNewRental() {
         Rental rental = new Rental(1L, savedCopyOfBook, savedReader, LocalDate.now(), LocalDate.now());
 
-        Rental savedRental = rentalService.saveNewRental(rental);
+        savedRental = rentalService.saveNewRental(rental);
         Optional<Rental> searchedRental = rentalRepository.findById(savedRental.getId());
+        Optional<Reader> searchedReader = readerRepository.findById(savedReader.getId());
+        Optional<CopyOfBook> searchedCopyOfBook = copyOfBookRepository.findById(savedCopyOfBook.getId());
 
-        assertTrue(searchedRental.isPresent());
-        assertEquals(savedReader.getFirstname(), searchedRental.get().getReader().getFirstname());
-        assertEquals(savedCopyOfBook.getStatus(), searchedRental.get().getCopyOfBook().getStatus());
-        assertEquals(savedRental.getRentDate(), searchedRental.get().getRentDate());
-        assertEquals(savedRental.getReturnDate(), searchedRental.get().getReturnDate());
+        try {
+            assertTrue(searchedRental.isPresent());
+            assertTrue(searchedReader.isPresent());
+            assertTrue(searchedCopyOfBook.isPresent());
 
+            assertEquals(savedRental.getId(), searchedReader.get().getRentalList().get(0).getId());
+            assertEquals(savedRental.getId(), searchedCopyOfBook.get().getRentalList().get(0).getId());
 
+            assertEquals(savedRental.getRentDate(), searchedRental.get().getRentDate());
+            assertEquals(savedRental.getReturnDate(), searchedRental.get().getReturnDate());
+        } finally {
+            rentalRepository.deleteById(savedRental.getId());
+        }
     }
 
     @Test
     void testFindById() {
         Rental rental = new Rental(1L, savedCopyOfBook, savedReader, LocalDate.now(), LocalDate.now());
-        Rental savedRental = rentalRepository.save(rental);
+        savedRental = rentalRepository.save(rental);
 
         Optional<Rental> searchedRental = rentalService.findById(savedRental.getId());
+        Optional<Reader> searchedReader = readerRepository.findById(savedReader.getId());
+        Optional<CopyOfBook> searchedCopyOfBook = copyOfBookRepository.findById(savedCopyOfBook.getId());
 
-        assertTrue(searchedRental.isPresent());
-        assertEquals(savedReader.getFirstname(), searchedRental.get().getReader().getFirstname());
-        assertEquals(savedCopyOfBook.getStatus(), searchedRental.get().getCopyOfBook().getStatus());
-        assertEquals(savedRental.getRentDate(), searchedRental.get().getRentDate());
-        assertEquals(savedRental.getReturnDate(), searchedRental.get().getReturnDate());
+        try {
+            assertTrue(searchedRental.isPresent());
+            assertTrue(searchedReader.isPresent());
+            assertTrue(searchedCopyOfBook.isPresent());
 
+            assertEquals(savedRental.getId(), searchedReader.get().getRentalList().get(0).getId());
+            assertEquals(savedRental.getId(), searchedCopyOfBook.get().getRentalList().get(0).getId());
+
+            assertEquals(savedRental.getRentDate(), searchedRental.get().getRentDate());
+            assertEquals(savedRental.getReturnDate(), searchedRental.get().getReturnDate());
+        } finally {
+            rentalRepository.deleteById(searchedRental.orElse(savedRental).getId());
+        }
     }
 }
