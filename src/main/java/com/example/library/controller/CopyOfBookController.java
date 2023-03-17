@@ -1,8 +1,10 @@
 package com.example.library.controller;
 
+import com.example.library.domain.Book;
 import com.example.library.domain.CopyOfBook;
 import com.example.library.domain.CopyOfBookDto;
 import com.example.library.mapper.CopyOfBookMapper;
+import com.example.library.service.BookService;
 import com.example.library.service.CopyOfBookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -19,11 +21,19 @@ import java.util.Optional;
 public class CopyOfBookController {
     private final CopyOfBookService copyOfBookService;
     private final CopyOfBookMapper copyOfBookMapper;
+    private final BookService bookService;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> createNewCopyOfBook(@RequestBody CopyOfBookDto copyOfBookDto) {
+    public ResponseEntity<Void> createNewCopyOfBook(@RequestBody CopyOfBookDto copyOfBookDto) throws BookNotFoundException {
         CopyOfBook copyOfBook = copyOfBookMapper.mapToCopyOfBook(copyOfBookDto);
-        copyOfBookService.saveCopyOfBook(copyOfBook);
+        Optional<Book> book = bookService.findById(copyOfBookDto.getBookId());
+
+        if (book.isPresent()) {
+            copyOfBook.setBook(book.get());
+            copyOfBookService.saveCopyOfBook(copyOfBook);
+        }else {
+            throw new BookNotFoundException();
+        }
         return ResponseEntity.ok().build();
     }
 
