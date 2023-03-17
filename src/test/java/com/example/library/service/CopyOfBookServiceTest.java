@@ -82,7 +82,7 @@ class CopyOfBookServiceTest {
 
             assertEquals(searchedBook.get().getCopyOfBookList().get(3).getId(), searchedCopyOfBook.get().getId());
             assertEquals(copyOfBook.getStatus(), searchedCopyOfBook.get().getStatus());
-            assertEquals(copyOfBook.isRental(), searchedCopyOfBook.get().isRental());
+            assertEquals(copyOfBook.isRented(), searchedCopyOfBook.get().isRented());
             assertEquals(copyOfBook.getRentalList().size(), searchedCopyOfBook.get().getRentalList().size());
 
             Optional<Rental> searchedRental = rentalRepository.findById(searchedCopyOfBook.get().getRentalList().get(0).getId());
@@ -109,7 +109,7 @@ class CopyOfBookServiceTest {
             assertTrue(searchedCopyOfBook.isPresent());
             assertTrue(searchedBook.isPresent());
             assertEquals(copyOfBook.getStatus(), searchedCopyOfBook.get().getStatus());
-            assertEquals(copyOfBook.isRental(), searchedCopyOfBook.get().isRental());
+            assertEquals(copyOfBook.isRented(), searchedCopyOfBook.get().isRented());
             assertEquals(0, searchedCopyOfBook.get().getRentalList().size());
             assertEquals(searchedBook.get().getCopyOfBookList().get(3).getId(), searchedCopyOfBook.get().getId());
         } finally {

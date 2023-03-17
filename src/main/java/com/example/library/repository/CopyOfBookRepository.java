@@ -15,7 +15,8 @@ import java.util.List;
 public interface CopyOfBookRepository extends CrudRepository<CopyOfBook, Long> {
     @Query(
             "SELECT C FROM CopyOfBook C JOIN Book B ON C.book.id = B.id " +
-                    "where C.isRental = false AND B.title = :title"
+                    "where C.rented = false AND B.title = :title"
     )
     List<CopyOfBook> findAvailableCopyOfBook(@Param("title") String title);
+
 }

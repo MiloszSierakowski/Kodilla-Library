@@ -3,7 +3,6 @@ package com.example.library.service;
 import com.example.library.domain.Book;
 import com.example.library.domain.CopyOfBook;
 import com.example.library.repository.BookRepository;
-import com.example.library.repository.CopyOfBookRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,9 +26,9 @@ class BookServiceTest {
     void saveBook() {
         Book book = new Book(1L, "Test", "Milosz", LocalDate.now(),
                 new ArrayList<>());
-        CopyOfBook copyOfBook = new CopyOfBook(1L, book, "pierwsza kopia", false, null);
-        CopyOfBook copyOfBook1 = new CopyOfBook(2L, book, "druga kopia", false, null);
-        CopyOfBook copyOfBook2 = new CopyOfBook(3L, book, "trzecia kopia", false, null);
+        CopyOfBook copyOfBook = new CopyOfBook(1L, book, "pierwsza kopia", false, new ArrayList<>());
+        CopyOfBook copyOfBook1 = new CopyOfBook(2L, book, "druga kopia", false, new ArrayList<>());
+        CopyOfBook copyOfBook2 = new CopyOfBook(3L, book, "trzecia kopia", false, new ArrayList<>());
 
         book.getCopyOfBookList().add(copyOfBook);
         book.getCopyOfBookList().add(copyOfBook1);
@@ -56,4 +55,24 @@ class BookServiceTest {
 
         bookRepository.deleteById(savedBook.getId());
     }
+
+    @Test
+    void findBookById() {
+        Book saveBook = bookService.saveBook(new Book(1L, "Milosz testuje", "Sie",
+                LocalDate.now(), new ArrayList<>()));
+
+        Optional<Book> searchedBook = bookService.findById(saveBook.getId());
+
+        try {
+            assertTrue(searchedBook.isPresent());
+            assertEquals(saveBook.getTitle(), searchedBook.get().getTitle());
+            assertEquals(saveBook.getAuthor(), searchedBook.get().getAuthor());
+            assertEquals(saveBook.getPublicationDate(), searchedBook.get().getPublicationDate());
+            assertEquals(0, searchedBook.get().getCopyOfBookList().size());
+        } finally {
+            bookRepository.deleteById(saveBook.getId());
+        }
+
+    }
+
 }

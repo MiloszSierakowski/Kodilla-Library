@@ -72,4 +72,20 @@ class ReaderServiceTest {
             bookRepository.deleteById(savedBook.getId());
         }
     }
+    @Test
+    void findReadeById() {
+        Reader savedReader = readerService.saveReader(new Reader(1L, "Milosz", "S", LocalDate.now(), new ArrayList<>()));
+
+        Optional<Reader> searchedReader = readerService.findById(savedReader.getId());
+
+        try {
+            assertTrue(searchedReader.isPresent());
+            assertEquals(savedReader.getFirstname(), searchedReader.get().getFirstname());
+            assertEquals(savedReader.getLastname(), searchedReader.get().getLastname());
+            assertEquals(savedReader.getRegistrationDate(), searchedReader.get().getRegistrationDate());
+            assertEquals(0, searchedReader.get().getRentalList().size());
+        } finally {
+            readerRepository.deleteById(savedReader.getId());
+        }
+    }
 }
