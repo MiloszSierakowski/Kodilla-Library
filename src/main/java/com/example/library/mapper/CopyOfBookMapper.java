@@ -2,23 +2,26 @@ package com.example.library.mapper;
 
 import com.example.library.domain.CopyOfBook;
 import com.example.library.domain.CopyOfBookDto;
-import org.springframework.stereotype.Service;
+import org.mapstruct.InheritInverseConfiguration;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 import java.util.List;
 
-@Service
-public class CopyOfBookMapper {
-    public CopyOfBook mapToCopyOfBook(CopyOfBookDto copyOfBookDto) {
-        return new CopyOfBook(copyOfBookDto.getId(), copyOfBookDto.getBook(),
-                copyOfBookDto.getStatus(), copyOfBookDto.isRental(), copyOfBookDto.getRentalList());
-    }
+@Mapper(componentModel = "spring")
+public interface CopyOfBookMapper {
 
-    public CopyOfBookDto mapToCopyOfBookDto(CopyOfBook copyOfBook) {
-        return new CopyOfBookDto(copyOfBook.getId(), copyOfBook.getBook(),
-                copyOfBook.getStatus(), copyOfBook.isRental(), copyOfBook.getRentalList());
-    }
+    @Mapping(source = "id", target = "id")
+    @Mapping(ignore = true, target = "book")
+    @Mapping(source = "status", target = "status")
+    @Mapping(source = "rented", target = "rented")
+    @Mapping(ignore = true, target = "rentalList")
+    CopyOfBook mapToCopyOfBook(CopyOfBookDto copyOfBookDto);
 
-    public List<CopyOfBookDto> mapToListCopyOfBookDto(List<CopyOfBook> copyOfBookList) {
-        return copyOfBookList.stream().map(this::mapToCopyOfBookDto).toList();
-    }
+    @InheritInverseConfiguration(name = "mapToCopyOfBook")
+    @Mapping(source = "book.id", target = "bookId")
+    CopyOfBookDto mapToCopyOfBookDto(CopyOfBook copyOfBook);
+
+    List<CopyOfBookDto> mapToListCopyOfBookDto(List<CopyOfBook> copyOfBookList);
+    List<CopyOfBook> mapToListCopyOfBook(List<CopyOfBookDto> copyOfBookDtoList);
 }

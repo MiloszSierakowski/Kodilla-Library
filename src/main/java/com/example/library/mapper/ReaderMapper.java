@@ -2,19 +2,21 @@ package com.example.library.mapper;
 
 import com.example.library.domain.Reader;
 import com.example.library.domain.ReaderDto;
-import org.springframework.stereotype.Service;
+import org.mapstruct.InheritInverseConfiguration;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
-@Service
-public class ReaderMapper {
-    public Reader mapToReader(ReaderDto readerDto) {
-        return new Reader(readerDto.getId(), readerDto.getFirstname(),
-                readerDto.getLastname(), readerDto.getRegistrationDate(),
-                readerDto.getRentalList());
-    }
+@Mapper(componentModel = "spring")
+public interface ReaderMapper {
 
-    public ReaderDto mapToReaderDto(Reader reader) {
-        return new ReaderDto(reader.getId(), reader.getFirstname(),
-                reader.getLastname(), reader.getRegistrationDate(),
-                reader.getRentalList());
-    }
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "firstname", target = "firstname")
+    @Mapping(source = "lastname", target = "lastname")
+    @Mapping(source = "registrationDate", target = "registrationDate")
+    @Mapping(ignore = true, target = "rentalList")
+    Reader mapToReader(ReaderDto readerDto);
+
+    @InheritInverseConfiguration(name = "mapToReader")
+    ReaderDto mapToReaderDto(Reader reader);
+
 }

@@ -2,19 +2,20 @@ package com.example.library.mapper;
 
 import com.example.library.domain.Book;
 import com.example.library.domain.BookDto;
-import org.springframework.stereotype.Service;
+import org.mapstruct.InheritInverseConfiguration;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
-@Service
-public class BookMapper {
+@Mapper(componentModel = "spring")
+public interface BookMapper {
 
-    public Book mapToBook(BookDto bookDto) {
-        return new Book(bookDto.getId(), bookDto.getTitle(),
-                bookDto.getAuthor(), bookDto.getPublicationDate(), bookDto.getCopyOfBookList());
-    }
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "title", target = "title")
+    @Mapping(source = "author", target = "author")
+    @Mapping(source = "publicationDate", target = "publicationDate")
+    @Mapping(ignore = true, target = "copyOfBookList")
+    Book mapToBook(BookDto bookDto);
 
-    public BookDto mapToBookDto(Book book) {
-        return new BookDto(book.getId(), book.getTitle(),
-                book.getAuthor(), book.getPublicationDate(), book.getCopyOfBookList());
-    }
-
+    @InheritInverseConfiguration(name = "mapToBook")
+    BookDto mapToBookDto(Book book);
 }

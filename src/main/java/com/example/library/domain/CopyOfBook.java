@@ -22,7 +22,7 @@ public class CopyOfBook {
     @Column(name = "STATUS")
     private String status;
     @Column(name = "IS_RENTAL", nullable = false)
-    private boolean isRental;
+    private boolean rented;
     @OneToMany(
             targetEntity = Rental.class,
             mappedBy = "copyOfBook",
