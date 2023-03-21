@@ -1,11 +1,10 @@
 package com.example.library.service;
 
+import com.example.library.controller.RentalNotFoundException;
 import com.example.library.domain.Rental;
 import com.example.library.repository.RentalRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -16,7 +15,7 @@ public class RentalService {
         return rentalRepository.save(rental);
     }
 
-    public Optional<Rental> findById(Long id){
-        return rentalRepository.findById(id);
+    public Rental findById(Long id) throws RentalNotFoundException {
+        return rentalRepository.findById(id).orElseThrow(RentalNotFoundException::new);
     }
 }

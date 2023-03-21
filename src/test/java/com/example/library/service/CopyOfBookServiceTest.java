@@ -1,5 +1,6 @@
 package com.example.library.service;
 
+import com.example.library.controller.CopyOfBookNotFoundException;
 import com.example.library.domain.Book;
 import com.example.library.domain.CopyOfBook;
 import com.example.library.domain.Reader;
@@ -98,22 +99,21 @@ class CopyOfBookServiceTest {
     }
 
     @Test
-    void findById() {
+    void findById() throws CopyOfBookNotFoundException {
         CopyOfBook copyOfBook = new CopyOfBook(1L, savedBook, "new book", false, new ArrayList<>());
 
         CopyOfBook saveCopyOfBook = copyOfBookService.saveCopyOfBook(copyOfBook);
-        Optional<CopyOfBook> searchedCopyOfBook = copyOfBookService.findById(saveCopyOfBook.getId());
+        CopyOfBook searchedCopyOfBook = copyOfBookService.findById(saveCopyOfBook.getId());
         Optional<Book> searchedBook = bookRepository.findById(savedBook.getId());
 
         try {
-            assertTrue(searchedCopyOfBook.isPresent());
             assertTrue(searchedBook.isPresent());
-            assertEquals(copyOfBook.getStatus(), searchedCopyOfBook.get().getStatus());
-            assertEquals(copyOfBook.isRented(), searchedCopyOfBook.get().isRented());
-            assertEquals(0, searchedCopyOfBook.get().getRentalList().size());
-            assertEquals(searchedBook.get().getCopyOfBookList().get(3).getId(), searchedCopyOfBook.get().getId());
+            assertEquals(copyOfBook.getStatus(), searchedCopyOfBook.getStatus());
+            assertEquals(copyOfBook.isRented(), searchedCopyOfBook.isRented());
+            assertEquals(0, searchedCopyOfBook.getRentalList().size());
+            assertEquals(searchedBook.get().getCopyOfBookList().get(3).getId(), searchedCopyOfBook.getId());
         } finally {
-            copyOfBookRepository.deleteById(searchedCopyOfBook.orElse(saveCopyOfBook).getId());
+            copyOfBookRepository.deleteById(searchedCopyOfBook.getId());
         }
     }
 

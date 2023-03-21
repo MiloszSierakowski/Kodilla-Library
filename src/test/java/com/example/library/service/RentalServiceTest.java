@@ -1,5 +1,6 @@
 package com.example.library.service;
 
+import com.example.library.controller.RentalNotFoundException;
 import com.example.library.domain.Book;
 import com.example.library.domain.CopyOfBook;
 import com.example.library.domain.Reader;
@@ -76,26 +77,25 @@ class RentalServiceTest {
     }
 
     @Test
-    void testFindById() {
+    void testFindById() throws RentalNotFoundException {
         Rental rental = new Rental(1L, savedCopyOfBook, savedReader, LocalDate.now(), LocalDate.now());
         savedRental = rentalRepository.save(rental);
 
-        Optional<Rental> searchedRental = rentalService.findById(savedRental.getId());
+        Rental searchedRental = rentalService.findById(savedRental.getId());
         Optional<Reader> searchedReader = readerRepository.findById(savedReader.getId());
         Optional<CopyOfBook> searchedCopyOfBook = copyOfBookRepository.findById(savedCopyOfBook.getId());
 
         try {
-            assertTrue(searchedRental.isPresent());
             assertTrue(searchedReader.isPresent());
             assertTrue(searchedCopyOfBook.isPresent());
 
             assertEquals(savedRental.getId(), searchedReader.get().getRentalList().get(0).getId());
             assertEquals(savedRental.getId(), searchedCopyOfBook.get().getRentalList().get(0).getId());
 
-            assertEquals(savedRental.getRentDate(), searchedRental.get().getRentDate());
-            assertEquals(savedRental.getReturnDate(), searchedRental.get().getReturnDate());
+            assertEquals(savedRental.getRentDate(), searchedRental.getRentDate());
+            assertEquals(savedRental.getReturnDate(), searchedRental.getReturnDate());
         } finally {
-            rentalRepository.deleteById(searchedRental.orElse(savedRental).getId());
+            rentalRepository.deleteById(searchedRental.getId());
         }
     }
 }

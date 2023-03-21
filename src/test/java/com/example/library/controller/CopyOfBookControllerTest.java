@@ -21,7 +21,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -46,7 +45,7 @@ class CopyOfBookControllerTest {
         CopyOfBookDto copyOfBookDto = new CopyOfBookDto(1L, book.getId(), "in good shape", false);
 
         when(copyOfBookMapper.mapToCopyOfBook(any(CopyOfBookDto.class))).thenReturn(copyOfBook);
-        when(bookService.findById(copyOfBookDto.getId())).thenReturn(Optional.of(book));
+        when(bookService.findById(copyOfBookDto.getId())).thenReturn(book);
 
         Gson gson = new Gson();
         String jsonContent = gson.toJson(copyOfBookDto);
@@ -61,16 +60,36 @@ class CopyOfBookControllerTest {
     }
 
     @Test
+    void bookNotFoundException() throws Exception {
+        Book book = new Book(1L, "Milosz", "Test CopyOfBookController", LocalDate.now(), new ArrayList<>());
+
+        CopyOfBook copyOfBook = new CopyOfBook(1L, book, "in good shape", false, new ArrayList<>());
+        CopyOfBookDto copyOfBookDto = new CopyOfBookDto(1L, book.getId(), "in good shape", false);
+
+        when(copyOfBookMapper.mapToCopyOfBook(any(CopyOfBookDto.class))).thenReturn(copyOfBook);
+        when(bookService.findById(copyOfBookDto.getId())).thenThrow(new BookNotFoundException());
+
+        Gson gson = new Gson();
+        String jsonContent = gson.toJson(copyOfBookDto);
+
+        mockMvc.
+                perform(MockMvcRequestBuilders
+                        .post("/v1/copyOfBook")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8")
+                        .content(jsonContent))
+                .andExpect(MockMvcResultMatchers.status().is(404));
+    }
+
+    @Test
     void changeCopyOfBookStatus() throws Exception {
         Book book = new Book(1L, "Milosz", "Test CopyOfBookController", LocalDate.now(), new ArrayList<>());
 
-        Optional<CopyOfBook> optionalCopyOfBook = Optional.of(
-                new CopyOfBook(1L, book, "in good shape", false, new ArrayList<>())
-        );
+        CopyOfBook copyOfBook = new CopyOfBook(1L, book, "in good shape", false, new ArrayList<>());
         CopyOfBookDto copyOfBookDto = new CopyOfBookDto(1L, book.getId(), "BrandNew", false);
 
-        when(copyOfBookService.findById(copyOfBookDto.getId())).thenReturn(optionalCopyOfBook);
-        when(copyOfBookService.saveCopyOfBook(any(CopyOfBook.class))).thenReturn(optionalCopyOfBook.get());
+        when(copyOfBookService.findById(copyOfBookDto.getId())).thenReturn(copyOfBook);
+        when(copyOfBookService.saveCopyOfBook(any(CopyOfBook.class))).thenReturn(copyOfBook);
         when(copyOfBookMapper.mapToCopyOfBookDto(any(CopyOfBook.class))).thenReturn(copyOfBookDto);
 
         mockMvc.
@@ -82,6 +101,23 @@ class CopyOfBookControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(1)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.status", Matchers.is("BrandNew")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.rented", Matchers.is(false)));
+    }
+
+    @Test
+    void copyOfBookNotFoundException() throws Exception {
+        Book book = new Book(1L, "Milosz", "Test CopyOfBookController", LocalDate.now(), new ArrayList<>());
+
+        CopyOfBookDto copyOfBookDto = new CopyOfBookDto(1L, book.getId(), "BrandNew", false);
+
+        when(copyOfBookService.findById(copyOfBookDto.getId())).thenThrow(new CopyOfBookNotFoundException());
+
+        mockMvc.
+                perform(MockMvcRequestBuilders
+                        .put("/v1/copyOfBook/1/BrandNew")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8"))
+                .andExpect(MockMvcResultMatchers.status().is(404));
+
     }
 
     @Test

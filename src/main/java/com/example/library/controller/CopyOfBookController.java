@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/v1/copyOfBook")
@@ -26,31 +25,23 @@ public class CopyOfBookController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> createNewCopyOfBook(@RequestBody CopyOfBookDto copyOfBookDto) throws BookNotFoundException {
         CopyOfBook copyOfBook = copyOfBookMapper.mapToCopyOfBook(copyOfBookDto);
-        Optional<Book> book = bookService.findById(copyOfBookDto.getBookId());
+        Book book = bookService.findById(copyOfBookDto.getBookId());
 
-        if (book.isPresent()) {
-            copyOfBook.setBook(book.get());
-            copyOfBookService.saveCopyOfBook(copyOfBook);
-        }else {
-            throw new BookNotFoundException();
-        }
+        copyOfBook.setBook(book);
+        copyOfBookService.saveCopyOfBook(copyOfBook);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping(value = "/{id}/{status}")
     public ResponseEntity<CopyOfBookDto> changeCopyOfBookStatus(@PathVariable Long id, @PathVariable String status) throws CopyOfBookNotFoundException {
-        Optional<CopyOfBook> copyOfBook = copyOfBookService.findById(id);
-        if (copyOfBook.isPresent()){
-            copyOfBook.get().setStatus(status);
-            copyOfBookService.saveCopyOfBook(copyOfBook.get());
-        }else {
-            throw new CopyOfBookNotFoundException();
-        }
-        return ResponseEntity.ok(copyOfBook.map(copyOfBookMapper::mapToCopyOfBookDto).orElse(null));
+        CopyOfBook copyOfBook = copyOfBookService.findById(id);
+        copyOfBook.setStatus(status);
+        copyOfBookService.saveCopyOfBook(copyOfBook);
+        return ResponseEntity.ok(copyOfBookMapper.mapToCopyOfBookDto(copyOfBook));
     }
 
     @GetMapping(value = "/{title}")
-    public ResponseEntity<List<CopyOfBookDto>> howManyCopiesAreAvailable(@PathVariable String title){
+    public ResponseEntity<List<CopyOfBookDto>> howManyCopiesAreAvailable(@PathVariable String title) {
         List<CopyOfBook> copyOfBookList = copyOfBookService.findAvailableCopyOfBook(title);
         return ResponseEntity.ok(copyOfBookMapper.mapToListCopyOfBookDto(copyOfBookList));
     }

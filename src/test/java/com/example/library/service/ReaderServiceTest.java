@@ -1,5 +1,6 @@
 package com.example.library.service;
 
+import com.example.library.controller.ReaderNotFoundException;
 import com.example.library.domain.Book;
 import com.example.library.domain.CopyOfBook;
 import com.example.library.domain.Reader;
@@ -73,17 +74,16 @@ class ReaderServiceTest {
         }
     }
     @Test
-    void findReadeById() {
+    void findReadeById() throws ReaderNotFoundException {
         Reader savedReader = readerService.saveReader(new Reader(1L, "Milosz", "S", LocalDate.now(), new ArrayList<>()));
 
-        Optional<Reader> searchedReader = readerService.findById(savedReader.getId());
+        Reader searchedReader = readerService.findById(savedReader.getId());
 
         try {
-            assertTrue(searchedReader.isPresent());
-            assertEquals(savedReader.getFirstname(), searchedReader.get().getFirstname());
-            assertEquals(savedReader.getLastname(), searchedReader.get().getLastname());
-            assertEquals(savedReader.getRegistrationDate(), searchedReader.get().getRegistrationDate());
-            assertEquals(0, searchedReader.get().getRentalList().size());
+            assertEquals(savedReader.getFirstname(), searchedReader.getFirstname());
+            assertEquals(savedReader.getLastname(), searchedReader.getLastname());
+            assertEquals(savedReader.getRegistrationDate(), searchedReader.getRegistrationDate());
+            assertEquals(0, searchedReader.getRentalList().size());
         } finally {
             readerRepository.deleteById(savedReader.getId());
         }

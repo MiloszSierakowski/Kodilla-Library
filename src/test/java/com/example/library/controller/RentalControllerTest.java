@@ -21,7 +21,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -49,8 +48,8 @@ class RentalControllerTest {
         RentalDto rentalDto = new RentalDto(1L, copyOfBook.getId(), reader.getId(), LocalDate.now(), LocalDate.now());
 
         when(rentalMapper.mapToRental(any(RentalDto.class))).thenReturn(rental);
-        when(copyOfBookService.findById(rentalDto.getCopyOfBookId())).thenReturn(Optional.of(copyOfBook));
-        when(readerService.findById(rentalDto.getReaderId())).thenReturn(Optional.of(reader));
+        when(copyOfBookService.findById(rentalDto.getCopyOfBookId())).thenReturn(copyOfBook);
+        when(readerService.findById(rentalDto.getReaderId())).thenReturn(reader);
 
         when(rentalService.saveNewRental(any(Rental.class))).thenReturn(rental);
         when(copyOfBookService.saveCopyOfBook(any(CopyOfBook.class))).thenReturn(copyOfBook);
@@ -69,6 +68,31 @@ class RentalControllerTest {
     }
 
     @Test
+    void readerNotFoundException() throws Exception {
+        CopyOfBook copyOfBook = new CopyOfBook(2L, new Book(), "Fine", true, new ArrayList<>());
+        Reader reader = new Reader(3L, "Milosz", "S", LocalDate.now(), new ArrayList<>());
+
+        Rental rental = new Rental(1L, copyOfBook, reader, LocalDate.now(), LocalDate.now());
+        RentalDto rentalDto = new RentalDto(1L, copyOfBook.getId(), reader.getId(), LocalDate.now(), LocalDate.now());
+
+        when(rentalMapper.mapToRental(any(RentalDto.class))).thenReturn(rental);
+        when(copyOfBookService.findById(rentalDto.getCopyOfBookId())).thenReturn(copyOfBook);
+        when(readerService.findById(rentalDto.getReaderId())).thenThrow(new ReaderNotFoundException());
+
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
+        String jsonContent = gson.toJson(rentalDto);
+
+        mockMvc.
+                perform(MockMvcRequestBuilders
+                        .post("/v1/rental")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8")
+                        .content(jsonContent))
+                .andExpect(MockMvcResultMatchers.status().is(404));
+    }
+
+    @Test
     void finishRental() throws Exception {
         CopyOfBook copyOfBook = new CopyOfBook(2L, new Book(), "Fine", true, new ArrayList<>());
         Reader reader = new Reader(3L, "Milosz", "S", LocalDate.now(), new ArrayList<>());
@@ -76,7 +100,7 @@ class RentalControllerTest {
         Rental rental = new Rental(1L, copyOfBook, reader, LocalDate.now(), null);
         RentalDto rentalDto = new RentalDto(1L, copyOfBook.getId(), reader.getId(), LocalDate.now(), LocalDate.now());
 
-        when(rentalService.findById(rentalDto.getId())).thenReturn(Optional.of(rental));
+        when(rentalService.findById(rentalDto.getId())).thenReturn(rental);
         when(rentalMapper.mapToRentalDto(any(Rental.class))).thenReturn(rentalDto);
 
         Gson gson = new GsonBuilder()
@@ -93,7 +117,29 @@ class RentalControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(1)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.copyOfBookId", Matchers.is(2)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.readerId", Matchers.is(3)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.rentDate", Matchers.is("2023-03-16")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.returnDate", Matchers.is("2023-03-16")));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.rentDate", Matchers.equalTo(LocalDate.now().toString())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.returnDate", Matchers.equalTo(LocalDate.now().toString())));
+    }
+    @Test
+    void testNoFoundRentalException() throws Exception {
+        CopyOfBook copyOfBook = new CopyOfBook(2L, new Book(), "Fine", true, new ArrayList<>());
+        Reader reader = new Reader(3L, "Milosz", "S", LocalDate.now(), new ArrayList<>());
+
+        RentalDto rentalDto = new RentalDto(1L, copyOfBook.getId(), reader.getId(), LocalDate.now(), LocalDate.now());
+
+        when(rentalService.findById(rentalDto.getId())).thenThrow(new RentalNotFoundException());
+        when(rentalMapper.mapToRentalDto(any(Rental.class))).thenReturn(rentalDto);
+
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
+        String jsonContent = gson.toJson(rentalDto);
+
+        mockMvc.
+                perform(MockMvcRequestBuilders
+                        .put("/v1/rental")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8")
+                        .content(jsonContent))
+                .andExpect(MockMvcResultMatchers.status().is(404));
     }
 }

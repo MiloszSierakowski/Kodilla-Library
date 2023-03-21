@@ -13,8 +13,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
-
 @RestController
 @RequestMapping("/v1/rental")
 @RequiredArgsConstructor
@@ -29,38 +27,28 @@ public class RentalController {
     public ResponseEntity<Void> createNewRental(@RequestBody RentalDto rentalDto) throws CopyOfBookNotFoundException, ReaderNotFoundException {
         Rental rental = rentalMapper.mapToRental(rentalDto);
 
-        Optional<CopyOfBook> copyOfBook = copyOfBookService.findById(rentalDto.getCopyOfBookId());
-        Optional<Reader> reader = readerService.findById(rentalDto.getReaderId());
+        CopyOfBook copyOfBook = copyOfBookService.findById(rentalDto.getCopyOfBookId());
+        Reader reader = readerService.findById(rentalDto.getReaderId());
 
-        if (copyOfBook.isPresent() && reader.isPresent()) {
-            rental.setCopyOfBook(copyOfBook.get());
-            rental.setReader(reader.get());
-            rentalService.saveNewRental(rental);
+        rental.setCopyOfBook(copyOfBook);
+        rental.setReader(reader);
+        rentalService.saveNewRental(rental);
 
-            copyOfBook.get().setRented(true);
-            copyOfBookService.saveCopyOfBook(copyOfBook.get());
-        } else if (copyOfBook.isEmpty()) {
-            throw new CopyOfBookNotFoundException();
-        } else {
-            throw new ReaderNotFoundException();
-        }
+        copyOfBook.setRented(true);
+        copyOfBookService.saveCopyOfBook(copyOfBook);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RentalDto> finishRental(@RequestBody RentalDto rentalDto) throws RentalNotFoundException {
-        Optional<Rental> rental = rentalService.findById(rentalDto.getId());
+        Rental rental = rentalService.findById(rentalDto.getId());
 
-        if (rental.isPresent()) {
-            CopyOfBook copyOfBook = rental.get().getCopyOfBook();
-            rental.get().setReturnDate(rentalDto.getReturnDate());
+        CopyOfBook copyOfBook = rental.getCopyOfBook();
+        rental.setReturnDate(rentalDto.getReturnDate());
 
-            rentalService.saveNewRental(rental.get());
-            copyOfBook.setRented(false);
-            copyOfBookService.saveCopyOfBook(copyOfBook);
-        } else {
-            throw new RentalNotFoundException();
-        }
-        return ResponseEntity.ok(rental.map(rentalMapper::mapToRentalDto).orElse(null));
+        rentalService.saveNewRental(rental);
+        copyOfBook.setRented(false);
+        copyOfBookService.saveCopyOfBook(copyOfBook);
+        return ResponseEntity.ok(rentalMapper.mapToRentalDto(rental));
     }
 }
